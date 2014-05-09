@@ -7,6 +7,7 @@
 #include <cassert>
 
 #include <memory>
+#include <iostream>
 
 
 namespace mtools
@@ -23,23 +24,25 @@ public:
 
     public:
 
+        Resources(
+            FifoScheduler * const fifoScheduler,
+            OptimizedScheduler * const optimizedScheduler)
+            : m_fifoScheduler(fifoScheduler)
+            , m_optimizedScheduler(optimizedScheduler)
+        {
+            assert(fifoScheduler != NULL);
+            assert(optimizedScheduler != NULL);
+        }
+
         Resources & operator << (const size_t resource)
         {
+            std::cout << "A resource unit is available on compute node #"
+                << resource << std::endl;
             assert(m_fifoScheduler != NULL);
             assert(m_optimizedScheduler != NULL);
             m_fifoScheduler->queue_resource(resource);
             m_optimizedScheduler->queue_resource(resource);
             return *this;
-        }
-
-        void reset(
-            FifoScheduler * const fifoScheduler,
-            OptimizedScheduler * const optimizedScheduler)
-        {
-            assert(fifoScheduler != NULL);
-            assert(optimizedScheduler != NULL);
-            m_fifoScheduler = fifoScheduler;
-            m_optimizedScheduler = optimizedScheduler;
         }
 
     private:
@@ -54,23 +57,25 @@ public:
 
     public:
 
+        Jobs(
+            FifoScheduler * const fifoScheduler,
+            OptimizedScheduler * const optimizedScheduler)
+            : m_fifoScheduler(fifoScheduler)
+            , m_optimizedScheduler(optimizedScheduler)
+        {
+            assert(fifoScheduler != NULL);
+            assert(optimizedScheduler != NULL);
+        }
+
         Jobs & operator << (const size_t job)
         {
+            std::cout << "Added job of size: "
+                << job << std::endl;
             assert(m_fifoScheduler != NULL);
             assert(m_optimizedScheduler != NULL);
             m_fifoScheduler->queue_job(job);
             m_optimizedScheduler->queue_job(job);
             return *this;
-        }
-
-        void reset(
-            FifoScheduler * const fifoScheduler,
-            OptimizedScheduler * const optimizedScheduler)
-        {
-            assert(fifoScheduler != NULL);
-            assert(optimizedScheduler != NULL);
-            m_fifoScheduler = fifoScheduler;
-            m_optimizedScheduler = optimizedScheduler;
         }
 
     private:
@@ -83,21 +88,11 @@ public:
 public:
 
     SchedulerTester()
-        : m_fifoScheduler()
-        , m_optimizedScheduler()
-        , m_resources()
-        , m_jobs()
-    {
-        reset();
-    }
-
-    void reset()
-    {
-        m_fifoScheduler.reset(new FifoScheduler);
-        m_optimizedScheduler.reset(new OptimizedScheduler());
-        m_resources.reset(m_fifoScheduler.get(), m_optimizedScheduler.get());
-        m_jobs.reset(m_fifoScheduler.get(), m_optimizedScheduler.get());
-    }
+        : m_fifoScheduler(new FifoScheduler)
+        , m_optimizedScheduler(new OptimizedScheduler())
+        , m_resources(m_fifoScheduler.get(), m_optimizedScheduler.get())
+        , m_jobs(m_fifoScheduler.get(), m_optimizedScheduler.get())
+    {}
 
 public:
 
@@ -109,6 +104,22 @@ public:
     Jobs & jobs()
     {
         return m_jobs;
+    }
+
+    void tick(const size_t ticks = 1)
+    {
+        std::cout << "... tick ..." << std::endl;
+        for (size_t i = 0; i < ticks; ++i) {
+            m_fifoScheduler->tick();
+            m_optimizedScheduler->tick();
+        }
+    }
+
+    void finish()
+    {
+        while (!m_fifoScheduler->idle() || !m_optimizedScheduler->idle()) {
+            tick();
+        }
     }
 
 private:
@@ -133,17 +144,27 @@ int main()
 
     mtools::SchedulerTester tester;
 
-    tester.resources() << 2 << 7;
-    tester.jobs() << 3 << 1 << 4;
-    tester.jobs() << 1;
-    tester.resources() << 1 << 8;
-    tester.jobs() << 5;
-    tester.resources() << 2 << 8 << 1 << 8;
-    tester.jobs() << 9;
-    tester.resources()  << 2 << 8 << 4 << 5 << 9 << 0 << 4 << 5 << 2
-        << 3 << 5 << 3 << 6;
+    tester.tick();
 
-    tester.reset();
+    tester.resources() << 2 << 7;
+    tester.tick();
+    tester.jobs() << 3 << 1 << 4;
+    tester.tick(2);
+    tester.jobs() << 1;
+    tester.tick(3);
+    tester.resources() << 1 << 8;
+    tester.tick(2);
+    tester.jobs() << 5;
+    tester.tick(2);
+    tester.resources() << 2 << 8 << 1 << 8;
+    tester.tick(2);
+    tester.jobs() << 9;
+    tester.resources() << 2 << 8 << 4 << 5 << 9 << 0 << 4 << 5 << 2;
+    tester.tick(2);
+    tester.resources() << 3 << 5 << 3 << 6;
+    tester.tick(2);
+    tester.resources() << 2 << 8 << 4 << 5 << 9 << 0 << 4 << 5 << 2;
+    tester.finish();
 
     return EXIT_SUCCESS;
 }

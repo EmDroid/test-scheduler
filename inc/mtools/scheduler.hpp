@@ -18,9 +18,13 @@ public:
 
     virtual ~Scheduler();
 
-    void queue_resource(const size_t resource);
+    virtual void queue_resource(const size_t resource) = 0;
 
-    void queue_job(const size_t job);
+    virtual void queue_job(const size_t job) = 0;
+
+    virtual bool idle() = 0;
+
+    virtual void tick() = 0;
 
 };
 
