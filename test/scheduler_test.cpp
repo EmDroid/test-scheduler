@@ -95,6 +95,11 @@ public:
         , m_jobs(m_fifoScheduler.get(), m_optimizedScheduler.get())
     {}
 
+    ~SchedulerTester()
+    {
+        finish();
+    }
+
 public:
 
     Resources & resources()
@@ -144,25 +149,65 @@ private:
 } // namespace mtools
 
 
-int main()
+namespace
+{
+
+
+void test1()
 {
     using mtools::Scheduler;
 
     mtools::SchedulerTester tester;
 
     tester.tick();
+    tester.resources() << 2;
+    tester.tick();
+    tester.jobs() << Scheduler::Job(3, 5) << Scheduler::Job(1, 2) << Scheduler::Job(1, 3);
+    tester.tick(2);
+    tester.resources() << 7;
+    tester.tick(3);
+    tester.jobs() << Scheduler::Job(4, 5) << Scheduler::Job(5, 2);
+    tester.resources() << 6 << 2 << 8 << 1;
+    tester.tick(2);
+    tester.jobs() << Scheduler::Job(8, 10);
+    tester.resources() << 2 << 8 << 3;
+    tester.tick(2);
+    tester.jobs() << Scheduler::Job(2, 3);
+    tester.resources() << 2 << 8 << 4 << 5 << 9 << 0 << 4 << 5;
+    tester.tick(2);
+    tester.resources() << 3 << 5;
+    tester.tick(2);
+    tester.resources() << 2 << 8;
+    tester.tick(2);
+    tester.resources() << 4 << 5 << 9;
+    tester.tick(2);
+    tester.resources() << 2 << 8 << 4 << 5 << 9 << 0 << 4 << 5 << 2;
+}
+
+
+void test2()
+{
+    using mtools::Scheduler;
+
+    mtools::SchedulerTester tester;
 
     tester.resources() << 2 << 7;
     tester.tick();
-    tester.jobs() << Scheduler::Job(3, 5) << Scheduler::Job(1, 2) << Scheduler::Job(4, 5);
+    tester.jobs() << Scheduler::Job(3, 5) << Scheduler::Job(1, 2);
     tester.tick(2);
     tester.jobs() << Scheduler::Job(1, 3);
-    tester.tick(3);
-    tester.resources() << 1 << 8;
+    tester.tick();
+    tester.resources() << 1;
+    tester.tick();
+    tester.resources() << 8;
+    tester.jobs() << Scheduler::Job(4, 5);
+    tester.resources() << 6 << 2;
     tester.tick(2);
     tester.jobs() << Scheduler::Job(5, 2);
     tester.tick(2);
-    tester.resources() << 2 << 8 << 1 << 8;
+    tester.resources() << 2 << 8;
+    tester.tick(2);
+    tester.resources() << 1 << 8;
     tester.tick(2);
     tester.jobs() << Scheduler::Job(9, 8);
     tester.resources() << 2 << 8 << 4 << 5 << 9 << 0 << 4 << 5 << 2;
@@ -173,7 +218,16 @@ int main()
     tester.tick(2);
     tester.jobs() << Scheduler::Job(2, 3);
     tester.resources() << 2 << 8 << 4 << 5 << 9 << 0 << 4 << 5 << 2;
-    tester.finish();
+}
+
+
+} // anonymous namespace
+
+
+int main()
+{
+    test1();
+    test2();
 
     return EXIT_SUCCESS;
 }
