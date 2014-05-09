@@ -16,10 +16,10 @@ test: $(TARGET)
 	./$(TARGET)
 
 clean:
-	rm $(OBJS)
+	-rm -f $(OBJS)
 
 cleanall: clean
-	rm $(TARGET)
+	-rm -f $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(CXX) -g -o2 -o $@ $^
