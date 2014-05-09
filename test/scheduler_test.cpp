@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <iostream>
+#include <iomanip>
 
 
 namespace mtools
@@ -120,6 +121,13 @@ public:
         while (!m_fifoScheduler->idle() || !m_optimizedScheduler->idle()) {
             tick();
         }
+        std::cout << std::endl;
+        std::cout << "[FIFO Scheduler] Average latency: "
+            << std::fixed << std::setw( 5 ) << std::setprecision( 3 )
+            << m_fifoScheduler->getAverageLatency() << std::endl;
+        std::cout << "[OPTIMIZING Scheduler] Average latency: "
+            << std::fixed << std::setw( 5 ) << std::setprecision( 3 )
+            << m_optimizedScheduler->getAverageLatency() << std::endl;
     }
 
 private:

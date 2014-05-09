@@ -7,6 +7,7 @@
 #include <mtools/scheduler.hpp>
 
 #include <queue>
+#include <deque>
 #include <vector>
 
 
@@ -34,7 +35,7 @@ private:
     std::queue<size_t> m_resources;
 
     // the jobs queue
-    std::queue<Job> m_jobs;
+    std::deque<Job> m_jobs;
 
     // the running jobs
     std::vector<Job> m_running;

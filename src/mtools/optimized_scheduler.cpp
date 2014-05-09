@@ -25,8 +25,9 @@ bool mtools::OptimizedScheduler::idle() const
 
 void mtools::OptimizedScheduler::tick()
 {
+    // process the running jobs
     for (std::vector<Job>::iterator it = m_running.begin(); it != m_running.end(); ) {
-        if (--it->m_time == 0) {
+        if (--it->m_timeRequired == 0) {
             std::cout << "[OPTIMIZED Scheduler] Finished job of size: "
                 << it->m_size << std::endl;
             it = m_running.erase(it);
@@ -34,8 +35,9 @@ void mtools::OptimizedScheduler::tick()
             ++it;
         }
     }
+    // check if any new job can be started
     while (m_jobs.size() > 0 && m_resources.size() > 0) {
-        // try to find the biggest job which will fit the current available nodes
+        // try to find the biggest job which will fit the currently available nodes
         std::vector<Job>::iterator itLaunch = m_jobs.end();
         for (std::vector<Job>::iterator it = m_jobs.begin(); it != m_jobs.end(); ++it) {
             if (itLaunch != m_jobs.end() && it->m_size > m_resources.size()) {
@@ -60,7 +62,14 @@ void mtools::OptimizedScheduler::tick()
             }
             std::cout << std::endl;
             m_running.push_back(*itLaunch);
+            // trace the latency
+            m_latencyCounter.add(itLaunch->m_timeWaiting);
+            // remove from waiting jobs
             m_jobs.erase(itLaunch);
         }
+    }
+    // increase the latency of waiting jobs
+    for (std::vector<Job>::iterator it = m_jobs.begin(); it != m_jobs.end(); ++it) {
+        ++it->m_timeWaiting;
     }
 }
