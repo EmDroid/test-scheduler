@@ -38,7 +38,7 @@ public:
 
     virtual void queue_job(const Job & job) = 0;
 
-    virtual bool idle() = 0;
+    virtual bool idle() const = 0;
 
     virtual void tick() = 0;
 

@@ -24,7 +24,7 @@ public:
 
     virtual void queue_job(const Job & job);
 
-    virtual bool idle();
+    virtual bool idle() const;
 
     virtual void tick();
 

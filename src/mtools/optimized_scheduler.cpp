@@ -17,7 +17,7 @@ void mtools::OptimizedScheduler::queue_job(const Job & job)
 }
 
 
-bool mtools::OptimizedScheduler::idle()
+bool mtools::OptimizedScheduler::idle() const
 {
     return m_running.empty();
 }
