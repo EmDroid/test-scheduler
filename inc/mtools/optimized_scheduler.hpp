@@ -6,6 +6,9 @@
 
 #include <mtools/scheduler.hpp>
 
+#include <queue>
+#include <vector>
+
 
 namespace mtools
 {
@@ -19,11 +22,22 @@ public:
 
     virtual void queue_resource(const size_t resource);
 
-    virtual void queue_job(const size_t job);
+    virtual void queue_job(const Job & job);
 
     virtual bool idle();
 
     virtual void tick();
+
+private:
+
+    // the resources queue
+    std::queue<size_t> m_resources;
+
+    // the jobs queue
+    std::vector<Job> m_jobs;
+
+    // the running jobs
+    std::vector<Job> m_running;
 
 };
 

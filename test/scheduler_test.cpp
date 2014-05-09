@@ -67,10 +67,10 @@ public:
             assert(optimizedScheduler != NULL);
         }
 
-        Jobs & operator << (const size_t job)
+        Jobs & operator << (const Scheduler::Job & job)
         {
             std::cout << "Added job of size: "
-                << job << std::endl;
+                << job.m_size << std::endl;
             assert(m_fifoScheduler != NULL);
             assert(m_optimizedScheduler != NULL);
             m_fifoScheduler->queue_job(job);
@@ -138,9 +138,7 @@ private:
 
 int main()
 {
-    //// the resource and request streams
-    //std::vector< int > resources;
-    //std::vector< int > requests;
+    using mtools::Scheduler;
 
     mtools::SchedulerTester tester;
 
@@ -148,21 +146,24 @@ int main()
 
     tester.resources() << 2 << 7;
     tester.tick();
-    tester.jobs() << 3 << 1 << 4;
+    tester.jobs() << Scheduler::Job(3, 5) << Scheduler::Job(1, 2) << Scheduler::Job(4, 5);
     tester.tick(2);
-    tester.jobs() << 1;
+    tester.jobs() << Scheduler::Job(1, 3);
     tester.tick(3);
     tester.resources() << 1 << 8;
     tester.tick(2);
-    tester.jobs() << 5;
+    tester.jobs() << Scheduler::Job(5, 2);
     tester.tick(2);
     tester.resources() << 2 << 8 << 1 << 8;
     tester.tick(2);
-    tester.jobs() << 9;
+    tester.jobs() << Scheduler::Job(9, 8);
     tester.resources() << 2 << 8 << 4 << 5 << 9 << 0 << 4 << 5 << 2;
     tester.tick(2);
     tester.resources() << 3 << 5 << 3 << 6;
     tester.tick(2);
+    tester.resources() << 2 << 8 << 4 << 5 << 9 << 0 << 4 << 5 << 2;
+    tester.tick(2);
+    tester.jobs() << Scheduler::Job(2, 3);
     tester.resources() << 2 << 8 << 4 << 5 << 9 << 0 << 4 << 5 << 2;
     tester.finish();
 
