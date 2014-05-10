@@ -221,6 +221,36 @@ void test2()
 }
 
 
+void test3()
+{
+    using mtools::Scheduler;
+
+    mtools::SchedulerTester tester;
+
+    tester.resources() << 2 << 7;
+    tester.tick();
+    tester.jobs() << Scheduler::Job(3, 5) << Scheduler::Job(1, 2) << Scheduler::Job(4, 5);
+    tester.tick(2);
+    tester.jobs() << Scheduler::Job(1, 3);
+    tester.tick(3);
+    tester.resources() << 1 << 8;
+    tester.tick(2);
+    tester.jobs() << Scheduler::Job(5, 2);
+    tester.tick(2);
+    tester.resources() << 2 << 8 << 1 << 8;
+    tester.tick(2);
+    tester.jobs() << Scheduler::Job(9, 8);
+    tester.resources() << 2 << 8 << 4 << 5 << 9 << 0 << 4 << 5 << 2;
+    tester.tick(2);
+    tester.resources() << 3 << 5 << 3 << 6;
+    tester.tick(2);
+    tester.resources() << 2 << 8 << 4 << 5 << 9 << 0 << 4 << 5 << 2;
+    tester.tick(2);
+    tester.jobs() << Scheduler::Job(2, 3);
+    tester.resources() << 2 << 8 << 4 << 5 << 9 << 0 << 4 << 5 << 2;
+}
+
+
 } // anonymous namespace
 
 
@@ -228,6 +258,7 @@ int main()
 {
     test1();
     test2();
+    test3();
 
     return EXIT_SUCCESS;
 }
