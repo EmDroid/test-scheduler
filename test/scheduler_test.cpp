@@ -152,6 +152,9 @@ namespace
 
 void test1()
 {
+    std::cout << std::endl << std::endl;
+    std::cout << "TEST 1" << std::endl << std::endl;
+
     using mtools::Scheduler;
 
     mtools::SchedulerTester tester;
@@ -184,6 +187,9 @@ void test1()
 
 void test2()
 {
+    std::cout << std::endl << std::endl;
+    std::cout << "TEST 2" << std::endl << std::endl;
+
     using mtools::Scheduler;
 
     mtools::SchedulerTester tester;
@@ -220,6 +226,9 @@ void test2()
 
 void test3()
 {
+    std::cout << std::endl << std::endl;
+    std::cout << "TEST 3" << std::endl << std::endl;
+
     using mtools::Scheduler;
 
     mtools::SchedulerTester tester;
