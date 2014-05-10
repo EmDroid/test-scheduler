@@ -25,7 +25,7 @@ $(TARGET): $(OBJS)
 	$(CXX) -g -o2 -o $@ $^
 
 .cpp.o:
-	$(CXX) -c -Wall -o2 -I inc -o $@ $<
+	$(CXX) -c -Wall -Werror -o2 -I inc -o $@ $<
 
 # dependencies
 scheduler.cpp: scheduler.hpp
