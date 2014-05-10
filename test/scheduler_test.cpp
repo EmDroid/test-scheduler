@@ -6,7 +6,6 @@
 #include <cstdlib>
 #include <cassert>
 
-#include <memory>
 #include <iostream>
 #include <iomanip>
 
@@ -26,30 +25,29 @@ public:
     public:
 
         Resources(
-            FifoScheduler * const fifoScheduler,
-            OptimizedScheduler * const optimizedScheduler)
+            FifoScheduler & fifoScheduler,
+            OptimizedScheduler & optimizedScheduler)
             : m_fifoScheduler(fifoScheduler)
             , m_optimizedScheduler(optimizedScheduler)
-        {
-            assert(fifoScheduler != NULL);
-            assert(optimizedScheduler != NULL);
-        }
+        {}
 
         Resources & operator << (const size_t resource)
         {
             std::cout << "A resource unit is available on compute node #"
                 << resource << std::endl;
-            assert(m_fifoScheduler != NULL);
-            assert(m_optimizedScheduler != NULL);
-            m_fifoScheduler->queue_resource(resource);
-            m_optimizedScheduler->queue_resource(resource);
+            m_fifoScheduler.queue_resource(resource);
+            m_optimizedScheduler.queue_resource(resource);
             return *this;
         }
 
     private:
 
-        FifoScheduler * m_fifoScheduler;
-        OptimizedScheduler * m_optimizedScheduler;
+        // disable copy construction and assignment
+        Resources(const Resources &);
+        Resources & operator = (const Resources &);
+
+        FifoScheduler & m_fifoScheduler;
+        OptimizedScheduler & m_optimizedScheduler;
 
     };
 
@@ -59,40 +57,39 @@ public:
     public:
 
         Jobs(
-            FifoScheduler * const fifoScheduler,
-            OptimizedScheduler * const optimizedScheduler)
+            FifoScheduler & fifoScheduler,
+            OptimizedScheduler & optimizedScheduler)
             : m_fifoScheduler(fifoScheduler)
             , m_optimizedScheduler(optimizedScheduler)
-        {
-            assert(fifoScheduler != NULL);
-            assert(optimizedScheduler != NULL);
-        }
+        {}
 
         Jobs & operator << (const Scheduler::Job & job)
         {
             std::cout << "Added job of size: "
                 << job.m_size << std::endl;
-            assert(m_fifoScheduler != NULL);
-            assert(m_optimizedScheduler != NULL);
-            m_fifoScheduler->queue_job(job);
-            m_optimizedScheduler->queue_job(job);
+            m_fifoScheduler.queue_job(job);
+            m_optimizedScheduler.queue_job(job);
             return *this;
         }
 
     private:
 
-        FifoScheduler * m_fifoScheduler;
-        OptimizedScheduler * m_optimizedScheduler;
+        // disable copy construction and assignment
+        Jobs(const Jobs &);
+        Jobs & operator = (const Jobs &);
+
+        FifoScheduler & m_fifoScheduler;
+        OptimizedScheduler & m_optimizedScheduler;
 
     };
 
 public:
 
     SchedulerTester()
-        : m_fifoScheduler(new FifoScheduler)
-        , m_optimizedScheduler(new OptimizedScheduler())
-        , m_resources(m_fifoScheduler.get(), m_optimizedScheduler.get())
-        , m_jobs(m_fifoScheduler.get(), m_optimizedScheduler.get())
+        : m_fifoScheduler()
+        , m_optimizedScheduler()
+        , m_resources(m_fifoScheduler, m_optimizedScheduler)
+        , m_jobs(m_fifoScheduler, m_optimizedScheduler)
     {}
 
     ~SchedulerTester()
@@ -116,29 +113,29 @@ public:
     {
         std::cout << "... tick ..." << std::endl;
         for (size_t i = 0; i < ticks; ++i) {
-            m_fifoScheduler->tick();
-            m_optimizedScheduler->tick();
+            m_fifoScheduler.tick();
+            m_optimizedScheduler.tick();
         }
     }
 
     void finish()
     {
-        while (!m_fifoScheduler->idle() || !m_optimizedScheduler->idle()) {
+        while (!m_fifoScheduler.idle() || !m_optimizedScheduler.idle()) {
             tick();
         }
         std::cout << std::endl;
         std::cout << "[FIFO Scheduler] Average latency: "
             << std::fixed << std::setw( 5 ) << std::setprecision( 3 )
-            << m_fifoScheduler->getAverageLatency() << std::endl;
+            << m_fifoScheduler.getAverageLatency() << std::endl;
         std::cout << "[OPTIMIZING Scheduler] Average latency: "
             << std::fixed << std::setw( 5 ) << std::setprecision( 3 )
-            << m_optimizedScheduler->getAverageLatency() << std::endl;
+            << m_optimizedScheduler.getAverageLatency() << std::endl;
     }
 
 private:
 
-    std::auto_ptr< FifoScheduler > m_fifoScheduler;
-    std::auto_ptr< OptimizedScheduler > m_optimizedScheduler;
+    FifoScheduler m_fifoScheduler;
+    OptimizedScheduler m_optimizedScheduler;
 
     Resources m_resources;
     Jobs m_jobs;
