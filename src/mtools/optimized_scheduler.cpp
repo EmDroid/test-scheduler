@@ -13,7 +13,7 @@ void mtools::OptimizedScheduler::queue_resource(const size_t resource)
 
 void mtools::OptimizedScheduler::queue_job(const Job & job)
 {
-    m_jobs.push_back(job);
+    m_jobs[job.m_size].push_back(job);
 }
 
 
@@ -37,39 +37,46 @@ void mtools::OptimizedScheduler::onTick()
     }
     // check if any new job can be started
     while (m_jobs.size() > 0 && m_resources.size() > 0) {
-        // try to find the biggest job which will fit the currently available nodes
-        std::vector<Job>::iterator itLaunch = m_jobs.end();
-        for (std::vector<Job>::iterator it = m_jobs.begin(); it != m_jobs.end(); ++it) {
-            if (itLaunch != m_jobs.end() && it->m_size > m_resources.size()) {
+        // try to find the largest job which will fit the currently available nodes
+        JobQueue::iterator itLaunch = m_jobs.end();
+        for (JobQueue::iterator it = m_jobs.begin(); it != m_jobs.end(); ++it) {
+            if (itLaunch != m_jobs.end() && it->first > m_resources.size()) {
+                // the job size is above the count available resources - no need to continue
                 break;
             }
-            if (it->m_size <= m_resources.size()
+            if (it->first <= m_resources.size()
                 && (itLaunch == m_jobs.end()
-                || it->m_size > itLaunch->m_size)) {
+                || it->first > itLaunch->first)) {
                 itLaunch = it;
             }
         }
         if (itLaunch == m_jobs.end()) {
-            // nothing possible to launch
+            // nothing else available to launch
             break;
         } else {
             //std::cout << "[OPTIMIZED Scheduler] Started job of size: "
             //    << itLaunch->m_size << std::endl;
             //std::cout << "\tnodes:";
-            for (size_t i = 0; i < itLaunch->m_size; ++i) {
+            for (size_t i = 0; i < itLaunch->first; ++i) {
                 //std::cout << " #" << m_resources.front();
                 m_resources.pop();
             }
             //std::cout << std::endl;
-            m_running.push_back(*itLaunch);
+            std::deque<Job> & bucket = itLaunch->second;
+            m_running.push_back(bucket.front());
             // trace the latency
-            m_latencyCounter.add(itLaunch->m_timeWaiting);
+            m_latencyCounter.add(bucket.front().m_timeWaiting);
             // remove from waiting jobs
-            m_jobs.erase(itLaunch);
+            bucket.pop_front();
+            if (bucket.empty()) {
+                m_jobs.erase(itLaunch);
+            }
         }
     }
     // increase the latency of waiting jobs
-    for (std::vector<Job>::iterator it = m_jobs.begin(); it != m_jobs.end(); ++it) {
-        ++it->m_timeWaiting;
+    for (JobQueue::iterator it = m_jobs.begin(); it != m_jobs.end(); ++it) {
+        for (std::deque<Job>::iterator in = it->second.begin(); in != it->second.end(); ++in) {
+            ++(in->m_timeWaiting);
+        }
     }
 }

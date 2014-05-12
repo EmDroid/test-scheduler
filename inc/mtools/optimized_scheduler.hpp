@@ -7,7 +7,8 @@
 #include "mtools/scheduler.hpp"
 
 #include <queue>
-#include <vector>
+#include <deque>
+#include <map>
 
 
 namespace mtools
@@ -33,8 +34,11 @@ private:
     // the resources queue
     std::queue<size_t> m_resources;
 
+
+    typedef std::map<size_t, std::deque<Job> > JobQueue;
+
     // the jobs queue
-    std::vector<Job> m_jobs;
+    JobQueue m_jobs;
 
 };
 

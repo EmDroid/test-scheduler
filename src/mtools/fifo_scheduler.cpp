@@ -53,6 +53,6 @@ void mtools::FifoScheduler::onTick()
     }
     // increase the latency of waiting jobs
     for (std::deque<Job>::iterator it = m_jobs.begin(); it != m_jobs.end(); ++it) {
-        ++it->m_timeWaiting;
+        ++(it->m_timeWaiting);
     }
 }
