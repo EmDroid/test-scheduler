@@ -8,7 +8,6 @@
 
 #include <queue>
 #include <deque>
-#include <vector>
 
 
 namespace mtools
@@ -36,9 +35,6 @@ private:
 
     // the jobs queue
     std::deque<Job> m_jobs;
-
-    // the running jobs
-    std::vector<Job> m_running;
 
 };
 

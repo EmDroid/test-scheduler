@@ -36,9 +36,6 @@ private:
     // the jobs queue
     std::vector<Job> m_jobs;
 
-    // the running jobs
-    std::vector<Job> m_running;
-
 };
 
 

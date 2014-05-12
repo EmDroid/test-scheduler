@@ -5,6 +5,7 @@
 
 
 #include <cstdlib>
+#include <vector>
 
 
 namespace mtools
@@ -47,6 +48,9 @@ public:
     double getAverageLatency() const;
 
 protected:
+
+    // the running jobs
+    std::vector<Job> m_running;
 
     class LatencyCounter
     {
