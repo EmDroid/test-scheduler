@@ -38,39 +38,32 @@ void mtools::OptimizedScheduler::onTick()
     // check if any new job can be started
     while (m_jobs.size() > 0 && m_resources.size() > 0) {
         // try to find the largest job which will fit the currently available nodes
-        JobQueue::iterator itLaunch = m_jobs.end();
-        for (JobQueue::iterator it = m_jobs.begin(); it != m_jobs.end(); ++it) {
-            if (itLaunch != m_jobs.end() && it->first > m_resources.size()) {
-                // the job size is above the count available resources - no need to continue
-                break;
-            }
-            if (it->first <= m_resources.size()
-                && (itLaunch == m_jobs.end()
-                || it->first > itLaunch->first)) {
-                itLaunch = it;
-            }
-        }
-        if (itLaunch == m_jobs.end()) {
+        JobQueue::iterator itLaunch = m_jobs.upper_bound(m_resources.size());
+        if (itLaunch == m_jobs.begin()) {
             // nothing else available to launch
             break;
-        } else {
-            //std::cout << "[OPTIMIZED Scheduler] Started job of size: "
-            //    << itLaunch->m_size << std::endl;
-            //std::cout << "\tnodes:";
-            for (size_t i = 0; i < itLaunch->first; ++i) {
-                //std::cout << " #" << m_resources.front();
-                m_resources.pop();
-            }
-            //std::cout << std::endl;
-            std::deque<Job> & bucket = itLaunch->second;
-            m_running.push_back(bucket.front());
-            // trace the latency
-            m_latencyCounter.add(bucket.front().m_timeWaiting);
-            // remove from waiting jobs
-            bucket.pop_front();
-            if (bucket.empty()) {
-                m_jobs.erase(itLaunch);
-            }
+        }
+        --itLaunch;
+        if (itLaunch->first > m_resources.size()) {
+            // nothing else available to launch
+            break;
+        }
+        //std::cout << "[OPTIMIZED Scheduler] Started job of size: "
+        //    << itLaunch->m_size << std::endl;
+        //std::cout << "\tnodes:";
+        for (size_t i = 0; i < itLaunch->first; ++i) {
+            //std::cout << " #" << m_resources.front();
+            m_resources.pop();
+        }
+        //std::cout << std::endl;
+        std::deque<Job> & bucket = itLaunch->second;
+        m_running.push_back(bucket.front());
+        // trace the latency
+        m_latencyCounter.add(bucket.front().m_timeWaiting);
+        // remove from waiting jobs
+        bucket.pop_front();
+        if (bucket.empty()) {
+            m_jobs.erase(itLaunch);
         }
     }
     // increase the latency of waiting jobs
