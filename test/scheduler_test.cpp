@@ -301,6 +301,32 @@ void test4()
 }
 
 
+void test5()
+{
+    std::cout << std::endl << std::endl;
+    std::cout << "TEST 5" << std::endl << std::endl;
+
+    using mtools::Scheduler;
+
+    mtools::SchedulerTester tester;
+
+    // test optimally suited for the FIFO scheduler
+    tester.resources() << 2 << 7;
+    tester.tick();
+    tester.jobs() << Scheduler::Job(5, 5) << Scheduler::Job(4, 4) << Scheduler::Job(3, 3);
+    tester.resources() << 6;
+    tester.tick(); // OPT job size 3
+    tester.resources() << 1 << 8;
+    tester.tick(); // FIFO job size 5
+    tester.resources() << 2 << 8;
+    tester.tick(); // OPT job size 4
+    tester.resources() << 1 << 3;
+    tester.tick(); // FIFO job size 4
+    tester.resources() << 2 << 8 << 1;
+    tester.tick(); // FIFO job size 3, OPT job size 5
+}
+
+
 } // anonymous namespace
 
 
@@ -310,6 +336,7 @@ int main()
     test2();
     test3();
     test4();
+    test5();
 
     return EXIT_SUCCESS;
 }
