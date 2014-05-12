@@ -35,6 +35,8 @@ public:
 
 public:
 
+    Scheduler();
+
     virtual ~Scheduler();
 
     virtual void queue_resource(const size_t resource) = 0;
@@ -43,14 +45,23 @@ public:
 
     virtual bool idle() const = 0;
 
-    virtual void tick() = 0;
+    void tick();
+
+    size_t getLastBusy() const;
 
     double getAverageLatency() const;
 
 protected:
 
+    virtual void onTick() = 0;
+
     // the running jobs
     std::vector<Job> m_running;
+
+    size_t m_ticks;
+
+    // last busy tick
+    size_t m_lastBusy;
 
     class LatencyCounter
     {
@@ -100,8 +111,27 @@ protected:
 } // namespace mtools
 
 
+inline mtools::Scheduler::Scheduler()
+    : m_running()
+    , m_ticks(0)
+    , m_lastBusy(0)
+{}
+
+
 inline mtools::Scheduler::~Scheduler()
 {}
+
+
+inline size_t mtools::Scheduler::getLastBusy() const
+{
+    return m_lastBusy;
+}
+
+
+inline double mtools::Scheduler::getAverageLatency() const
+{
+    return m_latencyCounter.average();
+}
 
 
 #endif // MTOOLS_SCHEDULER_INCLUDE_GUARD

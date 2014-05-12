@@ -23,7 +23,7 @@ bool mtools::FifoScheduler::idle() const
 }
 
 
-void mtools::FifoScheduler::tick()
+void mtools::FifoScheduler::onTick()
 {
     // process the running jobs
     for (std::vector<Job>::iterator it = m_running.begin(); it != m_running.end(); ) {

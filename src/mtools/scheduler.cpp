@@ -3,7 +3,11 @@
 #include "mtools/scheduler.hpp"
 
 
-double mtools::Scheduler::getAverageLatency() const
+void mtools::Scheduler::tick()
 {
-    return m_latencyCounter.average();
+    ++m_ticks;
+    if (!m_running.empty()) {
+        m_lastBusy = m_ticks;
+    }
+    onTick();
 }

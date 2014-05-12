@@ -26,7 +26,7 @@ public:
 
     virtual bool idle() const;
 
-    virtual void tick();
+    virtual void onTick();
 
 private:
 

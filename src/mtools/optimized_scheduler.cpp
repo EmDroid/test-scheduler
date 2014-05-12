@@ -23,7 +23,7 @@ bool mtools::OptimizedScheduler::idle() const
 }
 
 
-void mtools::OptimizedScheduler::tick()
+void mtools::OptimizedScheduler::onTick()
 {
     // process the running jobs
     for (std::vector<Job>::iterator it = m_running.begin(); it != m_running.end(); ) {

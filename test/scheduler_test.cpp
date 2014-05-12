@@ -124,6 +124,10 @@ public:
             tick();
         }
         std::cout << std::endl;
+        std::cout << "[FIFO Scheduler] Last busy tick: "
+            << m_fifoScheduler.getLastBusy() << std::endl;
+        std::cout << "[OPTIMIZING Scheduler] Last busy tick: "
+            << m_optimizedScheduler.getLastBusy() << std::endl;
         std::cout << "[FIFO Scheduler] Average latency: "
             << std::fixed << std::setw( 5 ) << std::setprecision( 3 )
             << m_fifoScheduler.getAverageLatency() << std::endl;
