@@ -33,8 +33,8 @@ public:
 
         Resources & operator << (const size_t resource)
         {
-            std::cout << "A resource unit is available on compute node #"
-                << resource << std::endl;
+            //std::cout << "A resource unit is available on compute node #"
+            //    << resource << std::endl;
             m_fifoScheduler.queue_resource(resource);
             m_optimizedScheduler.queue_resource(resource);
             return *this;
@@ -65,8 +65,8 @@ public:
 
         Jobs & operator << (const Scheduler::Job & job)
         {
-            std::cout << "Added job of size: "
-                << job.m_size << std::endl;
+            //std::cout << "Added job of size: "
+            //    << job.m_size << std::endl;
             m_fifoScheduler.queue_job(job);
             m_optimizedScheduler.queue_job(job);
             return *this;
@@ -111,7 +111,7 @@ public:
 
     void tick(const size_t ticks = 1)
     {
-        std::cout << "... tick ..." << std::endl;
+        //std::cout << "... tick ..." << std::endl;
         for (size_t i = 0; i < ticks; ++i) {
             m_fifoScheduler.tick();
             m_optimizedScheduler.tick();

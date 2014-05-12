@@ -28,8 +28,8 @@ void mtools::OptimizedScheduler::onTick()
     // process the running jobs
     for (std::vector<Job>::iterator it = m_running.begin(); it != m_running.end(); ) {
         if (--it->m_timeRequired == 0) {
-            std::cout << "[OPTIMIZED Scheduler] Finished job of size: "
-                << it->m_size << std::endl;
+            //std::cout << "[OPTIMIZED Scheduler] Finished job of size: "
+            //    << it->m_size << std::endl;
             it = m_running.erase(it);
         } else {
             ++it;
@@ -53,14 +53,14 @@ void mtools::OptimizedScheduler::onTick()
             // nothing possible to launch
             break;
         } else {
-            std::cout << "[OPTIMIZED Scheduler] Started job of size: "
-                << itLaunch->m_size << std::endl;
-            std::cout << "\tnodes:";
+            //std::cout << "[OPTIMIZED Scheduler] Started job of size: "
+            //    << itLaunch->m_size << std::endl;
+            //std::cout << "\tnodes:";
             for (size_t i = 0; i < itLaunch->m_size; ++i) {
-                std::cout << " #" << m_resources.front();
+                //std::cout << " #" << m_resources.front();
                 m_resources.pop();
             }
-            std::cout << std::endl;
+            //std::cout << std::endl;
             m_running.push_back(*itLaunch);
             // trace the latency
             m_latencyCounter.add(itLaunch->m_timeWaiting);
