@@ -19,7 +19,7 @@ void mtools::FifoScheduler::queue_job(const Job & job)
 
 bool mtools::FifoScheduler::idle() const
 {
-    return m_running.empty();
+    return m_jobs.empty() && m_running.empty();
 }
 
 
