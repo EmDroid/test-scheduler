@@ -1,0 +1,54 @@
+
+
+TEST 1
+
+
+[FIFO Scheduler] Last busy tick: 28
+[OPTIMIZING Scheduler] Last busy tick: 22
+[FIFO Scheduler] Average latency: 5.000
+[OPTIMIZING Scheduler] Average latency: 3.286
+
+
+TEST 2
+
+
+[FIFO Scheduler] Last busy tick: 24
+[OPTIMIZING Scheduler] Last busy tick: 23
+[FIFO Scheduler] Average latency: 3.286
+[OPTIMIZING Scheduler] Average latency: 2.571
+
+
+TEST 3
+
+
+[FIFO Scheduler] Last busy tick: 25
+[OPTIMIZING Scheduler] Last busy tick: 22
+[FIFO Scheduler] Average latency: 5.143
+[OPTIMIZING Scheduler] Average latency: 4.286
+
+
+TEST 4
+
+
+[FIFO Scheduler] Last busy tick: 30
+[OPTIMIZING Scheduler] Last busy tick: 30
+[FIFO Scheduler] Average latency: 2.143
+[OPTIMIZING Scheduler] Average latency: 2.143
+
+
+TEST 5
+
+
+[FIFO Scheduler] Last busy tick: 9
+[OPTIMIZING Scheduler] Last busy tick: 11
+[FIFO Scheduler] Average latency: 2.667
+[OPTIMIZING Scheduler] Average latency: 2.000
+
+
+TEST 6
+
+
+[FIFO Scheduler] Last busy tick: 14
+[OPTIMIZING Scheduler] Last busy tick: 14
+[FIFO Scheduler] Average latency: 4.333
+[OPTIMIZING Scheduler] Average latency: 4.333
