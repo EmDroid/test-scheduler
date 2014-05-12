@@ -327,6 +327,28 @@ void test5()
 }
 
 
+void test6()
+{
+    std::cout << std::endl << std::endl;
+    std::cout << "TEST 6" << std::endl << std::endl;
+
+    using mtools::Scheduler;
+
+    mtools::SchedulerTester tester;
+
+    // test optimally suited for the FIFO scheduler
+    tester.resources() << 2 << 7;
+    tester.tick();
+    tester.jobs() << Scheduler::Job(9, 9) << Scheduler::Job(6, 6) << Scheduler::Job(4, 4);
+    tester.resources() << 6 << 1 << 8 << 5 << 3 << 7 << 3 << 8; // up to 10 resources
+    tester.tick(5); // FIFO: launch 9, OPT: launch 6, 4 (optimum usage of resources)
+    tester.resources() << 6 << 1 << 8 << 5 << 3 << 7 << 3 << 8; // 8 resources
+    tester.tick(3); // FIFO: launch 6
+    tester.resources() << 6 << 1 << 8;
+    tester.tick(); // launch the rest
+}
+
+
 } // anonymous namespace
 
 
@@ -337,6 +359,7 @@ int main()
     test3();
     test4();
     test5();
+    test6();
 
     return EXIT_SUCCESS;
 }
