@@ -31,11 +31,17 @@ public:
 
 private:
 
+    typedef std::map<size_t, std::deque<Job> > JobQueue;
+    typedef std::map<size_t, size_t> JobSnapshot;
+
+    void matchJobs(
+        const size_t maxSize,
+        JobSnapshot & status,
+        size_t & matchSize,
+        std::vector<size_t> & jobs) const;
+
     // the resources queue
     std::queue<size_t> m_resources;
-
-
-    typedef std::map<size_t, std::deque<Job> > JobQueue;
 
     // the jobs queue
     JobQueue m_jobs;

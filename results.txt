@@ -49,6 +49,6 @@ TEST 6
 
 
 [FIFO Scheduler] Last busy tick: 14
-[OPTIMIZING Scheduler] Last busy tick: 14
+[OPTIMIZING Scheduler] Last busy tick: 19
 [FIFO Scheduler] Average latency: 4.333
-[OPTIMIZING Scheduler] Average latency: 4.333
+[OPTIMIZING Scheduler] Average latency: 2.667

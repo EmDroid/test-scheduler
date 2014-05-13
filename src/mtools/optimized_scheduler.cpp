@@ -35,35 +35,33 @@ void mtools::OptimizedScheduler::onTick()
             ++it;
         }
     }
+    // create the job snapshot
+    JobSnapshot snapshot;
+    for (JobQueue::const_iterator it = m_jobs.begin(); it != m_jobs.end(); ++it) {
+        snapshot[it->first] = it->second.size();
+    }
     // check if any new job can be started
-    while (m_jobs.size() > 0 && m_resources.size() > 0) {
-        // try to find the largest job which will fit the currently available nodes
-        JobQueue::iterator itLaunch = m_jobs.upper_bound(m_resources.size());
-        if (itLaunch == m_jobs.begin()) {
-            // nothing else available to launch
-            break;
-        }
-        --itLaunch;
-        if (itLaunch->first > m_resources.size()) {
-            // nothing else available to launch
-            break;
-        }
+    size_t matchSize = 0;
+    std::vector<size_t> jobs;
+    matchJobs(m_resources.size(), snapshot,  matchSize, jobs);
+    for (std::vector<size_t>::const_iterator it = jobs.begin(); it != jobs.end(); ++it) {
         //std::cout << "[OPTIMIZED Scheduler] Started job of size: "
-        //    << itLaunch->m_size << std::endl;
+        //    << *it << std::endl;
         //std::cout << "\tnodes:";
-        for (size_t i = 0; i < itLaunch->first; ++i) {
+        for (size_t i = 0; i < *it; ++i) {
             //std::cout << " #" << m_resources.front();
             m_resources.pop();
         }
         //std::cout << std::endl;
-        std::deque<Job> & bucket = itLaunch->second;
+        const JobQueue::iterator itJobQueue = m_jobs.find(*it);
+        std::deque<Job> & bucket = itJobQueue->second;
         m_running.push_back(bucket.front());
         // trace the latency
         m_latencyCounter.add(bucket.front().m_timeWaiting);
         // remove from waiting jobs
         bucket.pop_front();
         if (bucket.empty()) {
-            m_jobs.erase(itLaunch);
+            m_jobs.erase(itJobQueue);
         }
     }
     // increase the latency of waiting jobs
@@ -71,5 +69,44 @@ void mtools::OptimizedScheduler::onTick()
         for (std::deque<Job>::iterator in = it->second.begin(); in != it->second.end(); ++in) {
             ++(in->m_timeWaiting);
         }
+    }
+}
+
+
+void mtools::OptimizedScheduler::matchJobs(
+    const size_t maxSize,
+    JobSnapshot & status,
+    size_t & matchSize,
+    std::vector<size_t> & jobs) const
+{
+    // try to find the largest job(s) which will fit the currently available nodes
+    JobSnapshot::iterator start = status.upper_bound(maxSize);
+    if (start == status.begin()) {
+        // nothing else available to launch
+        return;
+    }
+    for (JobSnapshot::reverse_iterator it(start); it != status.rend(); ++it) {
+        if (!it->second) {
+            continue;
+        }
+        const size_t left = maxSize - it->first;
+        // remove the current item from the snapshot
+        --(it->second);
+        // try to match the rest to (maxSize - current item)
+        size_t tmpSize = 0;
+        std::vector<size_t> tmpJobs;
+        matchJobs(left, status, tmpSize, tmpJobs);
+        tmpSize += it->first;
+        if (matchSize < tmpSize) {
+            jobs.clear();
+            jobs.push_back(it->first);
+            jobs.insert(jobs.end(), tmpJobs.begin(), tmpJobs.end());
+            matchSize = tmpSize;
+            if (matchSize == maxSize) {
+                return;
+            }
+        }
+        // return the current item back to the snapshot
+        ++(it->second);
     }
 }
